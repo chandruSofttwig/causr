@@ -27,17 +27,17 @@ class RcaPromptBuilderTest {
   }
 }
 
-class GrokRcaClientTest {
+class GroqRcaClientTest {
 
   @Test
   void extractsOpenAiStyleMessageContent() {
-    GrokRcaClient client =
-        new GrokRcaClient(
+    GroqRcaClient client =
+        new GroqRcaClient(
             RestClient.builder(),
             new ObjectMapper(),
             "test-key",
-            "https://api.x.ai/v1",
-            "grok-4.6",
+            "https://api.groq.com/openai/v1",
+            "qwen/qwen3.6-27b",
             256);
     String text =
         client.extractText(

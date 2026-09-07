@@ -14,7 +14,7 @@ For architecture details see [PROJECT.md](../PROJECT.md). For instrumenting real
 | Java (JDK) | 17+ (21 preferred for BFF / llm-router / sender) | Spring services |
 | Maven | 3.9+ | Build/run Spring apps |
 | Node.js | 20+ (22 OK) | `causr-dashboard` |
-| Optional | `XAI_API_KEY` | RCA text via Grok (`llm-router-service`) |
+| Optional | `GROQ_API_KEY` | RCA text via Groq (`llm-router-service`) |
 | Optional | Slack Incoming Webhook | Anomaly alerts |
 
 ---
@@ -25,7 +25,7 @@ Runs infrastructure **and** app containers (processor, BFF, sender, dashboard, l
 
 ```bash
 cd /path/to/causr
-cp .env.example .env   # edit APP_SECURITY_API_KEY / XAI_API_KEY if needed
+cp .env.example .env   # edit APP_SECURITY_API_KEY / GROQ_API_KEY if needed
 
 docker compose --profile apps up -d --build
 ```
@@ -95,8 +95,8 @@ mvn spring-boot:run
 # mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dapp.slack.enabled=true"
 
 # Terminal 4 — RCA (optional)
-export XAI_API_KEY=xai-...
-# optional: export GROK_MODEL=grok-4.6
+export GROQ_API_KEY=gsk_...
+# optional: export GROQ_MODEL=qwen/qwen3.6-27b
 cd llm-router-service
 mvn spring-boot:run
 
@@ -126,9 +126,9 @@ Host apps talk to:
 | `APP_SECURITY_API_KEY` | `causr-local-key` | BFF, processor, dashboard |
 | `VITE_API_KEY` | same | Dashboard browser calls |
 | `VITE_TENANT_ID` | `default` | Dashboard tenant header + WS topic |
-| `XAI_API_KEY` | empty | llm-router Grok RCA (skipped if unset) |
-| `GROK_MODEL` | `grok-4.6` | xAI model id for RCA |
-| `GROK_BASE_URL` | `https://api.x.ai/v1` | xAI API base |
+| `GROQ_API_KEY` | empty | llm-router Groq RCA (skipped if unset) |
+| `GROQ_MODEL` | `qwen/qwen3.6-27b` | Groq model id for RCA |
+| `GROQ_BASE_URL` | `https://api.groq.com/openai/v1` | Groq API base |
 | `SLACK_WEBHOOK_URL` | empty | BFF Slack alerts |
 
 ---
@@ -140,7 +140,7 @@ Host apps talk to:
 | Dashboard 401 | Match `VITE_API_KEY` and `APP_SECURITY_API_KEY` |
 | No logs in UI | Ensure sender + collector + processor; check `docker compose ps` |
 | Empty anomalies | Processor `dev` profile + `ai-service` up; or use `emit-anomaly` |
-| No RCA | Set `XAI_API_KEY` and run `llm-router-service` |
+| No RCA | Set `GROQ_API_KEY` and run `llm-router-service` |
 | Port in use | `ss -tlnp \| grep -E ':8080\|:8090\|:5173'` and free the port |
 
 ---
@@ -149,5 +149,5 @@ Host apps talk to:
 
 1. Synthetic microservices emit OTLP logs → Kafka → ClickHouse  
 2. Dashboard shows KPIs, logs, anomalies (live WebSocket when BFF is up)  
-3. Optional Slack on anomaly; optional Grok RCA in the anomaly detail panel  
+3. Optional Slack on anomaly; optional Groq RCA in the anomaly detail panel  
 4. Trace links from logs when `trace_id` is present  

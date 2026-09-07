@@ -31,7 +31,7 @@ This keeps auth/tenant routing centralized and avoids exposing internal services
 
 - Consumes Kafka topic `anomaly-alerts`.
 - Pulls recent ERROR logs from ClickHouse `logs_hot` to build context.
-- Calls xAI Grok to generate a short RCA text.
+- Calls Groq (OpenAI-compatible chat completions) to generate a short RCA text.
 - Updates ClickHouse: `anomalies.rca_text`.
 - (It has its own WebSocket endpoint, but the recommended approach is: UI does **not** connect to it directly.)
 

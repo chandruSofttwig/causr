@@ -17,7 +17,7 @@ Monorepo for an observability and incident-intelligence platform: OTLP telemetry
 | `causr-dashboard` | Developer dashboard UI (Vite React) — **primary** | 5173 |
 | `observability-dashboard` | Legacy Next.js UI (optional; prefer `causr-dashboard`) | 3000 |
 | `cursr_landing` | Marketing landing page (Vite) | 5173 |
-| `llm-router-service` | Kafka → Grok RCA → ClickHouse `rca_text` | 8091 |
+| `llm-router-service` | Kafka → Groq RCA → ClickHouse `rca_text` | 8091 |
 
 ## Quick start: infrastructure
 
@@ -74,7 +74,7 @@ cd log-sender-backend && mvn spring-boot:run
 # 3. Dashboard BFF (enable Slack via JVM args — Maven -D alone does not reach the app)
 cd cursr_backend && mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dapp.slack.enabled=true"
 
-# 3b. RCA worker (optional — needs XAI_API_KEY)
+# 3b. RCA worker (optional — needs GROQ_API_KEY)
 cd llm-router-service && mvn spring-boot:run
 
 # 4. Developer dashboard UI (recommended)

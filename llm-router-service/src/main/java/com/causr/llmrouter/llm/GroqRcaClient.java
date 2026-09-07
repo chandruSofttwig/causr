@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 /**
- * xAI Grok client (OpenAI-compatible Chat Completions).
+ * Groq inference client (OpenAI-compatible Chat Completions).
  *
- * @see <a href="https://docs.x.ai/docs">xAI API docs</a>
+ * @see <a href="https://console.groq.com/docs/openai">Groq OpenAI compatibility</a>
  */
 @Service
-public class GrokRcaClient {
+public class GroqRcaClient {
 
-  private static final Logger log = LoggerFactory.getLogger(GrokRcaClient.class);
+  private static final Logger log = LoggerFactory.getLogger(GroqRcaClient.class);
 
   private final RestClient restClient;
   private final ObjectMapper objectMapper;
@@ -28,13 +28,13 @@ public class GrokRcaClient {
   private final String model;
   private final int maxTokens;
 
-  public GrokRcaClient(
+  public GroqRcaClient(
       RestClient.Builder restClientBuilder,
       ObjectMapper objectMapper,
-      @Value("${app.grok.api-key:}") String apiKey,
-      @Value("${app.grok.base-url}") String baseUrl,
-      @Value("${app.grok.model}") String model,
-      @Value("${app.grok.max-tokens:512}") int maxTokens) {
+      @Value("${app.groq.api-key:}") String apiKey,
+      @Value("${app.groq.base-url}") String baseUrl,
+      @Value("${app.groq.model}") String model,
+      @Value("${app.groq.max-tokens:512}") int maxTokens) {
     this.objectMapper = objectMapper;
     this.apiKey = apiKey == null ? "" : apiKey.trim();
     this.model = model;
@@ -52,7 +52,7 @@ public class GrokRcaClient {
 
   public String generateRca(String userPrompt) {
     if (!isConfigured()) {
-      throw new IllegalStateException("XAI_API_KEY (or GROK_API_KEY) is not set");
+      throw new IllegalStateException("GROQ_API_KEY is not set");
     }
     Map<String, Object> body =
         Map.of(
@@ -94,7 +94,6 @@ public class GrokRcaClient {
         if (content.isTextual()) {
           return content.asText().trim();
         }
-        // Some gateways return content as an array of parts.
         if (content.isArray()) {
           StringBuilder sb = new StringBuilder();
           for (JsonNode part : content) {
@@ -111,10 +110,10 @@ public class GrokRcaClient {
           }
         }
       }
-      log.warn("Unexpected Grok response shape: {}", truncate(responseJson, 200));
+      log.warn("Unexpected Groq response shape: {}", truncate(responseJson, 200));
       return responseJson == null ? "" : responseJson.trim();
     } catch (Exception e) {
-      throw new IllegalStateException("Failed to parse Grok response: " + e.getMessage(), e);
+      throw new IllegalStateException("Failed to parse Groq response: " + e.getMessage(), e);
     }
   }
 

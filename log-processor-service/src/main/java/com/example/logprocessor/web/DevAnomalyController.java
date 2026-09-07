@@ -74,7 +74,7 @@ public class DevAnomalyController {
     out.put("environment", environment);
     out.put("anomalyScore", score);
     out.put("publishedTopic", "anomaly-alerts");
-    out.put("note", "If XAI_API_KEY is set, llm-router-service will write anomalies.rca_text via Grok.");
+    out.put("note", "If GROQ_API_KEY is set, llm-router-service will write anomalies.rca_text via Groq.");
     out.put("devFlags", Map.of(
         "bypassHistoryGate", aiProperties.bypassHistoryGateOrDefault(),
         "forcePublishAnomaly", aiProperties.forcePublishAnomalyOrDefault()
