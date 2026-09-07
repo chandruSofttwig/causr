@@ -1,0 +1,21 @@
+clickhouse:
+  url: jdbc:clickhouse://localhost:8123/observability?compress=0
+  username: default
+  password: ''
+
+app:
+  security:
+    api-key: ''
+    tenants: default
+  log-generator:
+    enabled: false
+  anomalies:
+    kafka-topic: anomaly-alerts
+    rca-ready-topic: rca-ready
+    redis-channel-prefix: anomaly
+    kafka-consumer-enabled: false
+  slack:
+    enabled: false
+    webhook-url: ''
+    dashboard-base-url: http://localhost:5173
+    dedupe-window-minutes: 5

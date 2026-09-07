@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package com.example.logprocessor.ai.v1;
+
+option java_multiple_files = true;
+option java_package = "com.example.logprocessor.ai";
+option java_outer_classname = "AnomalyScorerProto";
+
+message FeatureVector {
+  string tenant_id = 1;
+  string service_name = 2;
+  string environment = 3;
+  int64 window_start_unix_ms = 4;
+  int64 window_end_unix_ms = 5;
+  float log_volume = 6;
+  float error_volume = 7;
+  float error_rate = 8;
+  float p99_latency_ms = 9;
+  float unique_error_types = 10;
+  float new_error_types = 11;
+  float silence_flag = 12;
+  float deployment_flag = 13;
+  float time_of_day_sin = 14;
+  float time_of_day_cos = 15;
+}
+
+message ScoreBatchRequest {
+  repeated FeatureVector vectors = 1;
+}
+
+message ScoreResult {
+  float anomaly_score = 1;
+  bool is_anomaly = 2;
+}
+
+message ScoreBatchResponse {
+  repeated ScoreResult results = 1;
+}
+
+service AnomalyScorer {
+  rpc ScoreBatch(ScoreBatchRequest) returns (ScoreBatchResponse);
+}

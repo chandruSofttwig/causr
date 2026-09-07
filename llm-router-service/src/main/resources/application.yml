@@ -1,0 +1,40 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: llm-router-service
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      group-id: llm-router-rca
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+clickhouse:
+  url: jdbc:clickhouse://localhost:8123/observability?compress=0
+  username: default
+  password: ''
+
+app:
+  anomalies:
+    kafka-topic: anomaly-alerts
+    rca-ready-topic: rca-ready
+  anthropic:
+    api-key: ${ANTHROPIC_API_KEY:}
+    model: claude-3-5-haiku-20241022
+    base-url: https://api.anthropic.com
+    max-tokens: 512
+  rca:
+    max-context-logs: 25
+    enabled: true

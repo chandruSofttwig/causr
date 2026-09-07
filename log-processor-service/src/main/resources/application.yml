@@ -1,0 +1,61 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      group-id: log-processor-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    streams:
+      application-id: log-processor-streams
+      bootstrap-servers: ${spring.kafka.bootstrap-servers}
+      client-id: log-processor-streams-client
+      properties:
+        processing.guarantee: at_least_once
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+clickhouse:
+  url: jdbc:clickhouse://localhost:8123/observability
+  table-logs-hot: logs_hot
+  table-logs-cold: logs_cold
+  table-service-metrics: service_metrics
+  table-anomalies: anomalies
+  table-spans: spans
+  username: default
+  password:
+  # Both required (non-blank) for the driver to skip its startup SELECT that uses currentUser().
+  # Set server-version to the result of SELECT version() on your ClickHouse when you can.
+  server-time-zone: UTC
+  server-version: "24.3.1"
+
+app:
+  security:
+    api-key: ${APP_SECURITY_API_KEY:causr-local-key}
+  traces:
+    server-spans-only: false
+  streams:
+    enabled: true
+  ai:
+    grpc-target: localhost:50051
+    http-base-url: http://localhost:8000
+    enable-clustering: true
+    # Dev/test switches (keep disabled in prod):
+    # - bypass-history-gate: call AI scorer even without 7 days of service_metrics baseline
+    # - anomaly-threshold-override: treat ai_score < threshold as anomaly (AI service defaults to -0.4)
+    # - force-publish-anomaly: always insert+publish one anomaly per window (debug only)
+    bypass-history-gate: false
+    anomaly-threshold-override:
+    force-publish-anomaly: false
+    dev-endpoints-enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,metrics

@@ -1,0 +1,39 @@
+# Dependencies & build
+**/node_modules/
+**/target/
+**/dist/
+**/.next/
+**/.vite/
+**/build/
+
+# Env & secrets
+.env
+.env.local
+.env.*.local
+!**/.env.example
+
+# IDE / OS
+.idea/
+.vscode/
+.cursor/
+*.iml
+.DS_Store
+*.swp
+*.swo
+.metadata/
+
+# Logs & temp
+*.log
+**/logs/
+tmp/
+temp/
+
+# Python
+**/__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Coverage / test
+**/coverage/
+**/.nyc_output/

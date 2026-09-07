@@ -1,0 +1,33 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: log-sender-backend
+
+logging:
+  level:
+    com.cursr.logsender.logging: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+otel:
+  service:
+    name: log-sender-backend
+  exporter:
+    otlp:
+      # Port 4318 is OTLP HTTP; use http/protobuf. For gRPC use port 4317 and protocol grpc.
+      endpoint: http://localhost:4318
+      protocol: http/protobuf
+
+app:
+  log-loop:
+    enabled: true
+    initial-delay-ms: 500
+    fixed-delay-ms: 1000
+    # Random DEBUG/INFO/WARN/ERROR records per scheduler tick (all sent to OpenTelemetry)
+    logs-per-tick: 6

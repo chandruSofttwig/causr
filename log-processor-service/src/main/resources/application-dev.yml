@@ -1,0 +1,4 @@
+app:
+  ai:
+    bypass-history-gate: true
+    dev-endpoints-enabled: true

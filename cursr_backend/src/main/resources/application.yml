@@ -1,0 +1,64 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: cursr-backend
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  kafka:
+    # Use a literal host:port here. Env override: SPRING_KAFKA_BOOTSTRAP_SERVERS=host:9092
+    # (Do not set KAFKA_BOOTSTRAP_SERVERS to empty — it overrides this and breaks startup.)
+    bootstrap-servers: localhost:29092
+    consumer:
+      group-id: cursr-backend-anomalies
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+clickhouse:
+  url: jdbc:clickhouse://localhost:8123/observability?compress=0
+  username: default
+  password: ''
+
+otel:
+  service:
+    name: cursr-backend-log-tester
+  exporter:
+    otlp:
+      endpoint: http://localhost:4317
+
+app:
+  cors:
+    allowed-origin: 'http://localhost:*'
+  security:
+    # When non-blank, /api/** requires X-API-Key or Authorization: Bearer
+    api-key: ${APP_SECURITY_API_KEY:causr-local-key}
+    tenants: default
+  websocket:
+    # Pattern so Vite (5173), CRA (3000), etc. can open STOMP to /ws/anomalies
+    allowed-origin: 'http://localhost:*'
+    max-connections: 300
+  log-generator:
+    enabled: false
+    initial-delay-ms: 1000
+    fixed-delay-ms: 2000
+  anomalies:
+    kafka-topic: anomaly-alerts
+    rca-ready-topic: rca-ready
+    redis-channel-prefix: anomaly
+    # Set false to run without Kafka (dashboard REST + Redis/WebSocket still work).
+    kafka-consumer-enabled: true
+  slack:
+    enabled: true
+    webhook-url: ${SLACK_WEBHOOK_URL:}
+    dashboard-base-url: http://localhost:5173
+    dedupe-window-minutes: 5
