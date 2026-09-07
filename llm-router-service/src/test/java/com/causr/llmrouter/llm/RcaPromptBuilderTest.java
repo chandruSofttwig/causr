@@ -27,23 +27,23 @@ class RcaPromptBuilderTest {
   }
 }
 
-class AnthropicRcaClientTest {
+class GrokRcaClientTest {
 
   @Test
-  void extractsTextBlocks() {
-    AnthropicRcaClient client =
-        new AnthropicRcaClient(
+  void extractsOpenAiStyleMessageContent() {
+    GrokRcaClient client =
+        new GrokRcaClient(
             RestClient.builder(),
             new ObjectMapper(),
             "test-key",
-            "https://api.anthropic.com",
-            "claude-3-5-haiku-20241022",
+            "https://api.x.ai/v1",
+            "grok-4.6",
             256);
     String text =
         client.extractText(
             """
-            {"content":[{"type":"text","text":"Likely dependency timeout."},{"type":"text","text":"Check payment DB."}]}
+            {"choices":[{"message":{"role":"assistant","content":"Likely dependency timeout. Check payment DB."}}]}
             """);
-    assertEquals("Likely dependency timeout.\nCheck payment DB.", text);
+    assertEquals("Likely dependency timeout. Check payment DB.", text);
   }
 }

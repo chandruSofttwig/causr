@@ -197,7 +197,10 @@ services:
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       CLICKHOUSE_URL: jdbc:clickhouse://clickhouse:8123/observability?compress=0
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      XAI_API_KEY: ${XAI_API_KEY:-}
+      GROK_API_KEY: ${GROK_API_KEY:-}
+      GROK_MODEL: ${GROK_MODEL:-grok-4.6}
+      GROK_BASE_URL: ${GROK_BASE_URL:-https://api.x.ai/v1}
 
   log-sender-backend:
     profiles: [apps]

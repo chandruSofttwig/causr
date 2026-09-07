@@ -22,7 +22,7 @@ No manual ordering. No separate `npm`/`mvn` unless hacking a single service.
 
 1. **One entrypoint** — single script or Compose project that owns the happy path.
 2. **Sensible defaults** — API key, tenant, ports baked for local; override only when needed.
-3. **Fewer moving parts in default profile** — demote optional deps (Slack, Anthropic, legacy UI).
+3. **Fewer moving parts in default profile** — demote optional deps (Slack, Grok RCA, legacy UI).
 4. **Hide Kafka/Redis/CH** behind the stack for beginners; keep them accessible for power users.
 5. **Fail loud** — health script that names the broken service.
 
@@ -70,7 +70,7 @@ No manual ordering. No separate `npm`/`mvn` unless hacking a single service.
 |------|---------|
 | Helm chart or `docker compose` prod overlay | Same mental model, different env |
 | `causr doctor` CLI | Diagnoses collector/Kafka lag/CH schema/API key mismatch |
-| Guided first-run TUI | Asks Slack/Anthropic once, writes `.env` |
+| Guided first-run TUI | Asks Slack/Grok once, writes `.env` |
 
 ---
 
@@ -91,7 +91,7 @@ No manual ordering. No separate `npm`/`mvn` unless hacking a single service.
 | Host Maven/Node | Power-user / service hacking only |
 | Kafka | Keep for full profile; consider Redpanda only in lite |
 | AI scorer | Keep as container until scoring is in-process |
-| RCA | Opt-in via env; stack healthy without Anthropic |
+| RCA | Opt-in via env; stack healthy without Grok API key |
 
 ---
 

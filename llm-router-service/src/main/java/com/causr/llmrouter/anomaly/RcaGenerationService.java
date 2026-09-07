@@ -2,7 +2,7 @@ package com.causr.llmrouter.anomaly;
 
 import com.causr.llmrouter.clickhouse.AnomalyRcaRepository;
 import com.causr.llmrouter.kafka.RcaReadyPublisher;
-import com.causr.llmrouter.llm.AnthropicRcaClient;
+import com.causr.llmrouter.llm.GrokRcaClient;
 import com.causr.llmrouter.llm.RcaPromptBuilder;
 import java.time.Instant;
 import java.util.List;
@@ -19,7 +19,7 @@ public class RcaGenerationService {
 
   private final AnomalyRcaRepository repository;
   private final RcaPromptBuilder promptBuilder;
-  private final AnthropicRcaClient anthropicRcaClient;
+  private final GrokRcaClient grokRcaClient;
   private final RcaReadyPublisher rcaReadyPublisher;
   private final int maxContextLogs;
   private final boolean enabled;
@@ -27,13 +27,13 @@ public class RcaGenerationService {
   public RcaGenerationService(
       AnomalyRcaRepository repository,
       RcaPromptBuilder promptBuilder,
-      AnthropicRcaClient anthropicRcaClient,
+      GrokRcaClient grokRcaClient,
       RcaReadyPublisher rcaReadyPublisher,
       @Value("${app.rca.max-context-logs:25}") int maxContextLogs,
       @Value("${app.rca.enabled:true}") boolean enabled) {
     this.repository = repository;
     this.promptBuilder = promptBuilder;
-    this.anthropicRcaClient = anthropicRcaClient;
+    this.grokRcaClient = grokRcaClient;
     this.rcaReadyPublisher = rcaReadyPublisher;
     this.maxContextLogs = maxContextLogs;
     this.enabled = enabled;
@@ -48,9 +48,9 @@ public class RcaGenerationService {
       log.warn("Skipping RCA: anomaly id missing");
       return;
     }
-    if (!anthropicRcaClient.isConfigured()) {
+    if (!grokRcaClient.isConfigured()) {
       log.warn(
-          "Skipping RCA for anomaly id={}: ANTHROPIC_API_KEY not set (set key to enable)",
+          "Skipping RCA for anomaly id={}: XAI_API_KEY not set (set key to enable Grok RCA)",
           event.id());
       return;
     }
@@ -64,16 +64,20 @@ public class RcaGenerationService {
     String prompt =
         promptBuilder.buildUserPrompt(
             service, env, event.anomalyScore(), event.featureJson(), logs);
-    String rcaText = anthropicRcaClient.generateRca(prompt);
+    String rcaText = grokRcaClient.generateRca(prompt);
     if (rcaText == null || rcaText.isBlank()) {
-      log.warn("Empty RCA from Anthropic for anomaly id={}", event.id());
+      log.warn("Empty RCA from Grok ({}) for anomaly id={}", grokRcaClient.getModel(), event.id());
       return;
     }
 
     repository.updateRca(event.id(), rcaText);
     String generatedAt = Instant.now().toString();
     rcaReadyPublisher.publish(RcaReadyEvent.from(event, rcaText, generatedAt));
-    log.info("RCA written for anomaly id={} service={}", event.id(), service);
+    log.info(
+        "RCA written for anomaly id={} service={} model={}",
+        event.id(),
+        service,
+        grokRcaClient.getModel());
   }
 
   private static String blankTo(String value, String fallback) {

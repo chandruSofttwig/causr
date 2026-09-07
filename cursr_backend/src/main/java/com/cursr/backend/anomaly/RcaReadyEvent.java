@@ -3,7 +3,7 @@ package com.cursr.backend.anomaly;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.UUID;
 
-/** Published by llm-router-service on topic rca-ready after Claude fills rca_text. */
+/** Published by llm-router-service on topic rca-ready after Grok fills rca_text. */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record RcaReadyEvent(
     String type,
